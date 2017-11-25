@@ -1,11 +1,10 @@
 #include"stdafx.h"
 #include "DefinitionEditor.h"
-
+//Naming uses arbitrary names in certain categories for language parameters
 void Token::userdisplay()
 {
 	std::cout << content;
 }
-
 void EndLine::userdisplay()
 {
 	std::cout << "\n";
@@ -27,6 +26,7 @@ KeyWord::KeyWord(std::string cont)
 void KeyWord::print(std::fstream* printer)
 {
 	*printer << ("<" + content + ">");
+	//Removes whitespace
 	for (auto i : Description)
 	{
 		i->print(printer);
@@ -77,6 +77,7 @@ Space::Space(std::string cont)
 {
 	//space content may be used to describe program-specific intermediate states, will not
 	//be printed
+	Type = TokenType::SpaceT;
 	content = cont;
 }
 Token* OpenF::createReadToken(int flag, std::string data)
@@ -123,6 +124,14 @@ KeyWord* OpenF::createKeyWord(std::string data)
 		return nullptr;
 	}
 }
+KeyRelation* OpenF::createKeyRelation(std::string data)
+{
+	std::cout << "KeyRelation Created!" << std::endl;
+	KeyRelation* keyre = new KeyRelation(data);
+	keyRelations.push_back(keyre);
+	return keyre;
+}
+
 	//Token creation called primarily by the user. Due to primary user use, it contains communication through cout to the user.
 Token* OpenF::createToken(int flag, std::string data)
 {
@@ -139,6 +148,9 @@ Token* OpenF::createToken(int flag, std::string data)
 		break;
 	case 1:
 		return createKeyWord(data);
+		break;
+	case 2:
+		return createKeyRelation(data);
 		break;
 	}
 }
@@ -179,8 +191,10 @@ void OpenF::readFormattedFile()
 	std::string currTokenContent;
 	//Implemented as the current place of data acquisition will switch from a keyword 
 	//Acquiring tokens to the main list acquiring tokens. 
+	std::vector<Token*>* lastWritingPlace = &filedata;
 	std::vector<Token*>* currWritingPlace = &filedata;
 	*stream >> std::noskipws;
+	int currSection = 0;
 	while (*stream >> currChar)
 	{
 		//<Key1>[DESCRIPKEY1]<Key2>[DESCRIPKEY2]<Key3>[VERYACCURATE]
@@ -202,10 +216,29 @@ void OpenF::readFormattedFile()
 			currWritingPlace->push_back(createReadToken(TokenFlag, currTokenContent));
 			currTokenContent.clear();
 			//Resets the writing location to the normal place.
-			currWritingPlace = &filedata;
+			switch (currSection)
+			{
+			case 0:
+				currWritingPlace = &filedata;
+				break;
+			case 1:
+				currWritingPlace = &keyRelations[keyRelations.size() - 1]->Relations;
+				break;
+			}
 			break;
+		case '{':
+			//Directly creates key relation.
+			filedata.push_back(createKeyRelation("NOTEXT"));
+			//Changes writing place
+			currWritingPlace = &keyRelations[keyRelations.size() - 1]->Relations;
+			currSection = 1;
+			break;
+		case '}':
+			TokenFlag = 0;
+			//Resets Writing Place
+			currWritingPlace = &filedata;
+			currSection = 0;
 		case ' ':
-			std::cout << "DETECTEDSPACE";
 			currWritingPlace->push_back(createReadToken(TokenFlag, currTokenContent));
 			currWritingPlace->push_back(createReadToken(-2, ":|SPACE|:"));
 			currTokenContent.clear();
@@ -223,7 +256,11 @@ void OpenF::readFormattedFile()
 	}
 	stream->close();
 }
-	//Returns a key found in the key vector with an id identical to the id given. If no key is found, the function will return null. 
+std::string OpenF::getFilePath()
+{
+	return filepath;
+}
+//Returns a key found in the key vector with an id identical to the id given. If no key is found, the function will return null. 
 KeyWord* OpenF::findkey(std::string id)
 {
 	for (auto i : keyWords)
@@ -264,6 +301,10 @@ void OpenF::writekeyword(KeyWord* tok)
 	keyWords.push_back(tok);
 	filedata.push_back(tok);
 }
+void OpenF::writerelation(KeyRelation* relation)
+{
+	filedata.push_back(relation);
+}
 void OpenF::performFullWrite()
 {
 	stream->open(filepath, std::fstream::out | std::fstream::trunc);
@@ -294,6 +335,22 @@ void OpenF::save()
 	performFullWrite();
 	std::cout << "Save complete!" << std::endl;
 }
+void OpenF::clearKeyWords()
+{
+	for (auto i : keyWords)
+	{
+		delete i;
+	}
+	keyWords.clear();
+}
+void OpenF::clearRelations()
+{
+	for (auto i : keyRelations)
+	{
+		delete i;
+	}
+	keyRelations.clear();
+}
 OpenF::~OpenF()
 {
 	std::cout << "Saving and Closing File..." << std::endl;
@@ -302,9 +359,11 @@ OpenF::~OpenF()
 	delete stream;
 	std::cout << "File Successfully Closed!" << std::endl;
 }
+//Only used for Keywords
 void injectTokens(std::string origline, std::vector<Token*>& injectee)
 {
 	std::string tempstring;
+	injectee.push_back(new AccessoryText("["));
 	for (int i = 0; i < origline.size(); i++)
 	{
 		switch (origline[i])
@@ -324,9 +383,14 @@ void injectTokens(std::string origline, std::vector<Token*>& injectee)
 			tempstring.push_back(origline[i]);
 		}
 	}
+	injectee.pop_back();
+	injectee.push_back(new AccessoryText("]"));
+	injectee.push_back(new EndLine(tempstring));
+	//Removes final whitespace
+
 	//Creates new line @	
 }
-	//Takes a reference string and continues to put user input into it until the terminator is called. 
+//Takes a reference string and continues to put user input into it until the terminator is called. 
 void getUserInput(std::string& storer, std::string terminator)
 {
 	std::string temp;
@@ -347,4 +411,84 @@ void getUserInput(std::string& storer, std::string terminator)
 			temp.clear();
 		}
 	}
+}
+void KeyRelation::addRelation(KeyWord* relator)
+{
+	bool cont = true;
+	for (auto i : Relations)
+	{
+		if (i == relator)
+		{
+			cont = false;
+		}
+	}
+	if (cont)
+	{
+		Relations.push_back(relator);
+	}
+	else
+	{
+		std::cout << "Error, couldn't add value to KeyRelation due to the presence of an identical value in the vector." << std::endl;
+	}
+}
+
+bool KeyRelation::viable()
+{
+	return Relations.size() > 1;
+}
+
+KeyRelation::KeyRelation(std::string cont)
+{
+	Type = TokenType::KeyRelationT;
+	content = cont;
+}
+
+void KeyRelation::print(std::fstream* printer)
+{
+	//Curly brackets indicate start and end of relations.
+	*printer << "{";
+	for (auto i : Relations)
+	{
+		//prints keyword with description, then clarifies relation with :
+		i->print(printer);
+	}
+	*printer << "}";
+	*printer << std::endl;
+}
+void KeyRelation::userdisplay()
+{
+	//Curly brackets indicate start and end of relations.
+	std::cout << "{";
+	for (auto i : Relations)
+	{
+		//prints keyword with description, then clarifies relation with :
+		i->userdisplay();
+	}
+	std::cout << "}";
+	std::cout << std::endl;
+}
+void KeyRelation::deleteRelation(std::string id)
+{
+	Token* delrelate = nullptr;
+	int loc = -1;
+	for (int i = 0; i < Relations.size(); i++)
+	{
+		if (Relations[i]->content == id)
+		{
+			loc = i;
+			delrelate = Relations[i];
+		}
+	}
+	if (delrelate != nullptr)
+	{
+		Relations.erase(Relations.begin() + loc);
+	}
+	else
+	{
+		std::cout << "Could not delete element, was not found in storage" << std::endl;
+	}
+}
+KeyRelation::~KeyRelation()
+{
+	Relations.clear();
 }
