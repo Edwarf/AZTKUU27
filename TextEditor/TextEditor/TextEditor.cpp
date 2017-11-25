@@ -42,6 +42,12 @@ void CompareFileUserIO(OpenF* file1, OpenF* file2)
 				std::cout << "Error, did not find one or both of the two specified keys. Please retry with existing key names." << std::endl;
 			}
 		}
+		else if (userin == "displayfile")
+		{
+			std::cout << "File Contents Begin." << std::endl;
+			relatefile->printToUser();
+			std::cout << "File Contents End." << std::endl;
+		}
 		else if (userin == "save" || userin == "savefile")
 		{
 			relatefile->save();
@@ -54,6 +60,7 @@ void CompareFileUserIO(OpenF* file1, OpenF* file2)
 			cont = false;
 			std::cout << "Exited Relation Mode!" << std::endl;
 		}
+		addinput.clear();
 	}
 }
 void UserIO()

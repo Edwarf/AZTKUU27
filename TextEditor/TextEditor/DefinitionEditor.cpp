@@ -197,7 +197,6 @@ void OpenF::readFormattedFile()
 	int currSection = 0;
 	while (*stream >> currChar)
 	{
-		//<Key1>[DESCRIPKEY1]<Key2>[DESCRIPKEY2]<Key3>[VERYACCURATE]
 		switch (currChar)
 		{
 			//Beginning of Token, sets TokenFlag to associated prevalue. 
@@ -208,11 +207,14 @@ void OpenF::readFormattedFile()
 			filedata.push_back(createReadToken(TokenFlag, currTokenContent));
 			currTokenContent.clear();
 			TokenFlag = 0;
+			break;
 		case '[':
+			currTokenContent.push_back(currChar);
 			//Sets the writing location to the last known token's description vector.
 			currWritingPlace = &keyWords[keyWords.size() - 1]->Description;
 			break;
 		case ']':
+			currTokenContent.push_back(currChar);
 			currWritingPlace->push_back(createReadToken(TokenFlag, currTokenContent));
 			currTokenContent.clear();
 			//Resets the writing location to the normal place.
