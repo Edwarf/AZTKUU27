@@ -31,6 +31,7 @@ public:
 class KeyWord : public Token
 {
 public:
+	KeyWord();
 	std::vector<Token*> Description;
 	KeyWord(std::string cont);
 	void print(std::fstream* printer);

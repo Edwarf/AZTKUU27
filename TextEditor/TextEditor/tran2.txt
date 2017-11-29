@@ -10,7 +10,7 @@
 <lop10>[Indicates whether or not a value has a certain type.]
 <obj1>[Type, capable of holding either true or false value.]
 <obj2>[Type capable of holding individual characters.]
-<obj3>[Type capable of holding basic integer values.(Generally 32 bits, occassionally 16) .]
+<obj3>[Type capable of holding basic integer values.(Generally 32 bits, occassionally 16).]
 <obj4>[Type capable of holding basic floating point values.]
 <obj5>[Type capable of holding other types.]
 <syn1>[Ends a statement.(; in most languages).]

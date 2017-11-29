@@ -18,6 +18,11 @@ EndLine::EndLine(std::string cont)
 	content = cont;
 	Type = TokenType::EndLineT;
 }
+KeyWord::KeyWord()
+{
+	content = "";
+	Type = TokenType::KeyWordT;
+}
 KeyWord::KeyWord(std::string cont)
 {
 	Type = TokenType::KeyWordT;
