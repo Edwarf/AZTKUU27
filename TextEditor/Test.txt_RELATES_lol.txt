@@ -1,0 +1,2 @@
+{<println>[Prints a line]<Key1>[KEY1MASSIVEDESCRIP ]}
+{<FML>[Mate]<Key2>[KEY2MASSIVEDESCRIP ]}

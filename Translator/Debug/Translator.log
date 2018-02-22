@@ -1,0 +1,11 @@
+﻿  GlobalTranslatorDefs.cpp
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(27): warning C4018: '<': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(39): warning C4018: '<': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(113): warning C4018: '>': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(158): warning C4129: 'w': unrecognized character escape sequence
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(173): warning C4129: 'w': unrecognized character escape sequence
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(210): warning C4018: '<': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(233): warning C4018: '<': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(238): warning C4018: '<': signed/unsigned mismatch
+c:\users\edwar\source\repos\aztkuu27\texteditor\translator\globaltranslatordefs.cpp(134): warning C4715: 'ConversionTable::ConvertToken': not all control paths return a value
+  Translator.vcxproj -> C:\Users\edwar\Source\Repos\AZTKUU27\TextEditor\Debug\Translator.exe

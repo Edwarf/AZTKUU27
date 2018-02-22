@@ -1,0 +1,8 @@
+
+
+print(Hello Translation!) 
+LV = 5 
+RV = 8 
+LV += RV 
+GR = RV - RV 
+print(GR)
